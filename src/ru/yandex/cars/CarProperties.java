@@ -1,3 +1,5 @@
+package ru.yandex.cars;
+
 class CarProperties {
     String maxSpeed; // максимальная скорость
     byte initialScore; // начальное количество очков

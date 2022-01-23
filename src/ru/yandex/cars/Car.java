@@ -1,3 +1,5 @@
+package ru.yandex.cars;
+
 class Car {
     double maxSpeed; // максимальная скорость
     float acceleration; // ускорение
