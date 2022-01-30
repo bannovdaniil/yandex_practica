@@ -33,11 +33,11 @@ public class Sber {
 //            System.out.println(p.first + " => " + p.second);
 //        }
         int countLinks = 0;
+        ArrayList<String> phrases = new ArrayList<>();
         for (int i = 0; i < links.size(); i++) {
             String first = links.get(i).first;
             ArrayList<Integer> path = new ArrayList<>();
             path.add(i);
-            ArrayList<String> phrases = new ArrayList<>();
             countLinks += getPath(path, i, first, links.get(i), links, first, phrases);
             links.set(i, new Pair(first, ""));
         }
