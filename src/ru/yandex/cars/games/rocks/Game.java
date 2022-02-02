@@ -129,9 +129,9 @@ public class Game {
                     || (p2Select == ITEMS.PAPER && p1Select == ITEMS.SCISSOR)
                     ? p2 : p1;
             winner.winCount++;
-            this.message = String.format("%n> Победитель: %s, %s"
-                    , winner.name
-                    , HELP_MESSAGE.get(winner.getSelect()));
+            this.message = String.format("%n> Победитель: %s, %s",
+                    winner.name,
+                    HELP_MESSAGE.get(winner.getSelect()));
         }
 
         /**
