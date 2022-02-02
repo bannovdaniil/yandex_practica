@@ -28,6 +28,7 @@ public class Game {
         Game game = new Game();
         game.play();
     }
+
     /**
      * тут происходит вся логика игры
      */
@@ -35,6 +36,8 @@ public class Game {
         showMessageStart();
         Player computer = new Player("Random", "AI");
         Player man = new Player("Человек", "human");
+        computer.doChoice();
+        man.doChoice();
         showMessageEnd();
         showWinner(computer, man);
     }
@@ -140,7 +143,8 @@ public class Game {
     class Player {
         private int select;
         private String name;
-        private static final String[] ROBOT_NAME = new String[]{"Петсон", "Зока", "Коломбо", "Рембо", "Алиса"};
+        private String[] ROBOT_NAME = new String[]{"Петсон", "Зока", "Коломбо", "Рембо", "Алиса"};
+        private boolean type;
 
         /**
          * @param name - имя
@@ -149,11 +153,20 @@ public class Game {
         public Player(String name, String seed) {
             this.name = name;
             if ("AI".equals(seed)) {
-                Random random = new Random();
-                this.select = random.nextInt(2);
+                this.type = true;
                 if ("Random".equals(name)) {
+                    Random random = new Random();
                     this.name = ROBOT_NAME[random.nextInt(ROBOT_NAME.length - 1)];
                 }
+            } else {
+                this.type = false;
+            }
+        }
+
+        public void doChoice() {
+            if (type) {
+                Random random = new Random();
+                this.select = random.nextInt(2);
             } else {
                 this.select = getUserSelect();
             }
