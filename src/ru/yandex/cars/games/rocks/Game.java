@@ -111,11 +111,9 @@ public class Game {
         }
 
         /**
-         * Вернуть победителя.
-         *
-         * @return - победитель
+         * Выбрать победителя.
          */
-        public Player getWinner() {
+        public void getWinner() {
             roundCount++;
             p1.doChoice();
             p2.doChoice();
@@ -123,7 +121,7 @@ public class Game {
             var p2Select = ITEMS.values()[p2.getSelect()];
             if (p2Select == p1Select) {
                 this.message = "> Ничья <";
-                return null;
+                return;
             }
 
             Player winner = (p2Select == ITEMS.SCISSOR && p1Select == ITEMS.STONE)
@@ -132,11 +130,13 @@ public class Game {
                     ? p2 : p1;
             winner.winCount++;
             this.message = String.format("%n> Победитель: %s, %s"
-                    ,winner.name
-                    ,HELP_MESSAGE.get(winner.getSelect()));
-            return winner;
+                    , winner.name
+                    , HELP_MESSAGE.get(winner.getSelect()));
         }
 
+        /**
+         * Статистика по играм
+         */
         public void showStatistic() {
             System.out.printf("%nСтатистика:%n Раунд: %d%n %s VS %s%n %d:%d%n%n",
                     roundCount,
