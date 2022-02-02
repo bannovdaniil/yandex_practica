@@ -3,6 +3,7 @@ package ru.yandex.cars.games.rocks;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.SplittableRandom;
 
 /**
  * игра Камень, Ножницы, Бумага,
@@ -36,69 +37,10 @@ public class Game {
         showMessageStart();
         Player computer = new Player("Random", "AI");
         Player man = new Player("Человек", "human");
-        computer.doChoice();
-        man.doChoice();
+        Round round = new Round(computer, man);
         showMessageEnd();
-        showWinner(computer, man);
-    }
-
-    /**
-     * Оглашаем результат
-     */
-    private void showWinner(Player computer, Player man) {
-        int userSelect = man.getSelect();
-        int computerSelect = computer.getSelect();
-        StringBuilder message = new StringBuilder("Победил ");
-        switch (getWin(computerSelect, userSelect)) {
-            case (1):
-                message.append(computer.name + ": ");
-                message.append(getWinMessage(computerSelect, userSelect));
-                break;
-            case (2):
-                message.append(man.name + ": ");
-                message.append(getWinMessage(userSelect, computerSelect));
-                break;
-            default:
-                message = new StringBuilder("Ничья");
-        }
-        message.insert(0, System.lineSeparator());
-        System.out.println(message);
-    }
-
-    /**
-     * если true тогда выиграл компьютер = 1, иначе человек =2
-     *
-     * @param sComputer - выбор компьютера
-     * @param uSelect   - выбор человека
-     * @return - 0- ничья, 1- победил компьютер, 0 - победил человек
-     */
-    private int getWin(int sComputer, int uSelect) {
-        if (sComputer == uSelect)
-            return 0;
-        int result = (sComputer == 2 && uSelect == 0)
-                || (sComputer == 0 && uSelect == 1)
-                || (sComputer == 1 && uSelect == 2)
-                ? 1 : 2;
-        return result;
-    }
-
-    /**
-     * надо же объяснить, почему произошла победа.
-     *
-     * @param sComputer - первый игрок
-     * @param uSelect   - второй игрок
-     * @return - сообщение с раскладом
-     */
-    private String getWinMessage(int sComputer, int uSelect) {
-        String message = "";
-        if (sComputer == 2 && uSelect == 0) {
-            message = "Бумага побеждает камень («бумага обёртывает камень»).";
-        } else if (sComputer == 0 && uSelect == 1) {
-            message = "Камень побеждает ножницы («камень затупляет или ломает ножницы»).";
-        } else if (sComputer == 1 && uSelect == 2) {
-            message = "Ножницы побеждают бумагу («ножницы разрезают бумагу»).";
-        }
-        return message;
+        round.getWinner();
+        System.out.println(round.message);
     }
 
     /**
@@ -140,6 +82,55 @@ public class Game {
         }
     }
 
+    class Round {
+        private Player p1;
+        private Player p2;
+        private String message;
+
+        public Round(Player p1, Player p2) {
+            this.p1 = p1;
+            this.p2 = p2;
+        }
+
+        /**
+         * Вернуть победителя.
+         *
+         * @return - победитель
+         */
+        public Player getWinner() {
+            p1.doChoice();
+            p2.doChoice();
+            int p1Select = p1.getSelect();
+            int p2Select = p2.getSelect();
+            if (p2Select == p1Select) {
+                this.message = "Ничья";
+                return null;
+            }
+            Player winner = (p2Select == 2 && p1Select == 0)
+                    || (p2Select == 0 && p1Select == 1)
+                    || (p2Select == 1 && p1Select == 2)
+                    ? p1 : p2;
+            StringBuilder message = new StringBuilder("Победил ");
+            message.append(winner.name + ": ");
+            switch (winner.getSelect()) {
+                case (0):
+                    message.append("Камень побеждает ножницы («камень затупляет или ломает ножницы»).");
+                    break;
+                case (1):
+                    message.append("Ножницы побеждают бумагу («ножницы разрезают бумагу»).");
+                    break;
+                default:
+                    message.append("Бумага побеждает камень («бумага обёртывает камень»).");
+            }
+            this.message = message.toString();
+            return winner;
+        }
+
+    }
+
+    /**
+     * Модель игрок
+     */
     class Player {
         private int select;
         private String name;
@@ -163,6 +154,9 @@ public class Game {
             }
         }
 
+        /**
+         * Игрок делает выбор
+         */
         public void doChoice() {
             if (type) {
                 Random random = new Random();
