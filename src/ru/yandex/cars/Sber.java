@@ -1,106 +1,87 @@
 package ru.yandex.cars;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Sber {
 
-    static class Pair {
-        String first;
-        String second;
+    public static int getResult(List<String> scheme) {
+        //       return left * 1000 + right * 100 + top * 10 + down;
+        Map<Integer, Integer> varios = new HashMap<>();
+        varios.put(0, 0);
+        varios.put(1, 20);
+        varios.put(10, 20);
+        varios.put(11, 20);
+        varios.put(100, 21);
+        varios.put(101, 17);
+        varios.put(110, 15);
+        varios.put(111, 40);
+        varios.put(1000, 21);
+        varios.put(1001, 10);
+        varios.put(1010, 13);
+        varios.put(1011, 31);
+        varios.put(1100, 21);
+        varios.put(1101, 32);
+        varios.put(1110, 29);
+        varios.put(1111, 63);
 
-        public Pair(String first, String second) {
-            this.first = first;
-            this.second = second;
-        }
-    }
-
-    public static int getResult(List<String> deal) {
-// собираем пары
-        ArrayList<Pair> links = new ArrayList<>();
-        for (var first : deal) {
-            if (first.contains("-")) {
-                ArrayList<String> path = new ArrayList<>();
-                String[] company = first.split("-");
-                for (var second : company[1].split("")) {
-                    links.add(new Pair(company[0], second));
-                }
-            } else {
-                links.add(new Pair(first, ""));
+        int result = 0;
+        char[][] array = new char[scheme.size()][];
+        for (int i = 0; i < scheme.size(); i++) {
+            String[] koleno = scheme.get(i).split("-");
+            array[i] = new char[koleno.length];
+            for (int j = 0; j < koleno.length; j++) {
+                array[i][j] = koleno[j].charAt(0);
             }
         }
-//        for (var p : links) {
-//            System.out.println(p.first + " => " + p.second);
-//        }
-        int countLinks = 0;
-        ArrayList<String> phrases = new ArrayList<>();
-        for (int i = 0; i < links.size(); i++) {
-            String first = links.get(i).first;
-            ArrayList<Integer> path = new ArrayList<>();
-            path.add(i);
-            countLinks += getPath(path, i, first, links.get(i), links, first, phrases);
-            links.set(i, new Pair(first, ""));
-        }
-        //    System.out.print(countLinks + "- ");
-        return countLinks;
-    }
-
-    private static int getPath(ArrayList<Integer> index, int start, String first,
-                               Pair pair, ArrayList<Pair> links, String path, ArrayList<String> phrases) {
-        int inner = 0;
-        for (int j = start; j < links.size(); j++) {
-            if (index.contains(j)) continue;
-            if (links.get(j).first.equals(pair.second)) {
-                //
-                String phrase = path + links.get(j).first + links.get(j).second;
-                if (links.get(j).second.equals(first)) {
-                    //      index.add(j);
-                    //     System.out.println(j + "=>" + path + links.get(j).first + links.get(j).second);
-                    //             System.out.println(index);
-                    // удаляем дубляж маршрутов, при этом, не трогаем крайние
-                    for (int i = 1; i < phrase.length() - 1; i++) {
-                        char ch = phrase.charAt(i);
-                        int lastPos = phrase.lastIndexOf(ch);
-                        if (phrase.indexOf(ch) != lastPos) {
-                            // удаляем последний дубль
-                            phrase = phrase.substring(0, lastPos)
-                                    + phrase.substring(lastPos + 1);
-                            i = 1;
-                        }
-                    }
-                    if (!phrases.contains(phrase)) {
-                        phrases.add(phrase);
-                        inner++;
-                    }
-                    // break;
-                } else {
-                    if (phrase.length() < index.size()) {
-                        ArrayList<Integer> cache = new ArrayList<>();
-                        for (int i = 0; i < phrase.length() - 1; i++) {
-                            cache.add(index.get(i));
-                        }
-                        index = cache;
-                    }
-                    index.add(j);
-                    //   System.out.println(temp);
-                    inner += getPath(index, start, first, links.get(j),
-                            links, path + links.get(j).first, phrases);
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+   //             System.out.println(array[i][j]);
+                int count = countAll(i, j, array);
+                if (count > 0) {
+//                    System.out.println(count);
+//                    count= countAll(i, j, array);
+                    result += varios.get(count);
                 }
             }
         }
-        return inner;
+        return result;
+    }
+
+    private static int countAll(int x, int y, char[][] array) {
+        if (array[x][y] == '0') {
+            return -1;
+        }
+        int left = 1;
+        int right = 1;
+        int top = 1;
+        int down = 1;
+        if (x != 0) {
+            top = array[x - 1][y] == '1' ? 1:0;
+        }
+        if (x != array.length - 1) {
+            down = array[x + 1][y] == '1' ? 1:0;
+        }
+        if (y != 0) {
+            left = array[x][y - 1] == '1' ? 1:0;
+        }
+        if (y != array[x].length - 1) {
+            right = array[x][y + 1] == '1' ? 1:0;
+        }
+
+        return left * 1000 + right * 100 + top * 10 + down;
     }
 
     public static void main(String[] args) {
-//       System.out.println(1 == getResult(List.of("a-b", "b-c", "c-a")));
-        //     System.out.println(1 == getResult(List.of("a-b", "b-c", "c-ad", "d")));
-        //    System.out.println(0 == getResult(List.of("a-b", "b", "c-b")));
-        //       System.out.println(2 == getResult(List.of("a-b", "b-cd", "c-a", "d-c")));
-        //     System.out.println(3 == getResult(List.of("a-b", "b-ce", "c-d", "d-e", "e-fc", "f-a")));
-        System.out.println(5 == getResult(List.of("a-b", "b-c", "c-da", "d-ea", "e-fa", "f-ac")));
-// abcde
-// abcdefa
-// abcdecd
-// abefa
+        System.out.println(getResult(List.of(
+                "1-0-0-0-0-0-0-0",
+                "0-0-0-0-0-0-0-0",
+                "0-0-0-0-0-0-0-0",
+                "0-0-0-0-0-0-0-0",
+                "0-0-0-0-0-0-0-0",
+                "0-0-0-0-0-0-0-0",
+                "0-0-0-0-0-0-0-0"
+        )));
     }
 }
